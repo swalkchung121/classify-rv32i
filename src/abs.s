@@ -15,14 +15,15 @@
 #   None - The operation modifies the value at the pointer address
 # =================================================================
 abs:
-    # Prologue
-    ebreak
     # Load number from memory
-    lw t0 0(a0)
-    bge t0, zero, done
-
-    # TODO: Add your own implementation
+    lw t0, 0(a0)        # Load value from memory address in a0
+    
+    # Check if number is negative
+    bge t0, zero, done  # If t0 >= 0, skip negation
+    
+    # If negative, negate it
+    neg t0, t0          # t0 = -t0
+    sw t0, 0(a0)        # Store the absolute value back to memory
 
 done:
-    # Epilogue
     jr ra

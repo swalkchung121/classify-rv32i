@@ -39,12 +39,9 @@ write_matrix:
     mv s3, a3        # s3 = number of columns
 
     li a1, 1
-
     jal fopen
-
     li t0, -1
     beq a0, t0, fopen_error   # fopen didn't work
-
     mv s0, a0        # file descriptor
 
     # Write number of rows and columns to file
@@ -55,29 +52,30 @@ write_matrix:
     addi a1, sp, 24  # buffer with rows and columns
     li a2, 2         # number of elements to write
     li a3, 4         # size of each element
-
     jal fwrite
-
     li t0, 2
     bne a0, t0, fwrite_error
 
-    # mul s4, s2, s3   # s4 = total elements
-    # FIXME: Replace 'mul' with your own implementation
+    # Calculate total elements (s2 * s3) without using mul
+    li s4, 0         # Initialize result
+    mv t0, s2        # Use s2 (rows) as counter
+multiply_loop:
+    beqz t0, multiply_done
+    add s4, s4, s3   # Add columns s3 times
+    addi t0, t0, -1
+    j multiply_loop
+multiply_done:
 
     # write matrix data to file
     mv a0, s0
     mv a1, s1        # matrix data pointer
     mv a2, s4        # number of elements to write
     li a3, 4         # size of each element
-
     jal fwrite
-
     bne a0, s4, fwrite_error
 
     mv a0, s0
-
     jal fclose
-
     li t0, -1
     beq a0, t0, fclose_error
 
@@ -89,19 +87,18 @@ write_matrix:
     lw s3, 16(sp)
     lw s4, 20(sp)
     addi sp, sp, 44
-
     jr ra
 
 fopen_error:
-    li a0, 27
+    li a0, 27        # Updated to match specification
     j error_exit
 
 fwrite_error:
-    li a0, 30
+    li a0, 30        # Updated to match specification
     j error_exit
 
 fclose_error:
-    li a0, 28
+    li a0, 28        # Updated to match specification
     j error_exit
 
 error_exit:
